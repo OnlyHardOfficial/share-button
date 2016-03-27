@@ -918,8 +918,8 @@ var ShareButton = (function (_ShareUtils) {
       var networks = instance.getElementsByTagName('li');
 
       this._addClass(networksCon, 'networks-' + this.config.enabledNetworks);
-      instance.addEventListener('click', function () {
-        return _this._eventToggle(instance, networksCon);
+      instance.addEventListener('click', function (e) {
+        return _this._eventToggle(e, instance, networksCon);
       });
 
       // Add listener to activate networks and close button
@@ -933,8 +933,8 @@ var ShareButton = (function (_ShareUtils) {
             var a = network.getElementsByTagName('a')[0];
 
             _this._addClass(network, _this.config.networks[name]['class']);
-
-            if (network.className !== 'email') a.setAttribute('onclick', 'return false');
+			
+            if (!network.className.match('email')) a.setAttribute('onclick', 'return false');
 
             a.addEventListener('mousedown', function () {
               _this._hook('before', name, instance);
@@ -964,8 +964,10 @@ var ShareButton = (function (_ShareUtils) {
      */
   }, {
     key: '_eventToggle',
-    value: function _eventToggle(button, networks) {
-      if (this._hasClass(networks, 'active')) this._eventClose(networks);else this._eventOpen(button, networks);
+    value: function _eventToggle(e, button, networks) {
+		if(e.target.tagName.toLowerCase() == "share-button"){
+			if (this._hasClass(networks, 'active')) this._eventClose(button, networks);else this._eventOpen(button, networks);
+		}
     }
 
     /**
@@ -983,6 +985,7 @@ var ShareButton = (function (_ShareUtils) {
       if (this.collision) this._collisionDetection(button, networks);
 
       this._addClass(networks, 'active');
+      this._addClass(button, 'active');
     }
 
     /**
@@ -994,7 +997,8 @@ var ShareButton = (function (_ShareUtils) {
      */
   }, {
     key: '_eventClose',
-    value: function _eventClose(button) {
+    value: function _eventClose(button, networks) {
+      this._removeClass(networks, 'active');
       this._removeClass(button, 'active');
     }
 
@@ -1338,7 +1342,7 @@ var ShareButton = (function (_ShareUtils) {
         for (var _iterator4 = networks[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
           var network = _step4.value;
 
-          networkList += '<li class=\'' + network + '\' data-network=\'' + network + '\'><a></a></li>';
+          networkList += '<li class=\'' + network + '\' data-network=\'' + network + '\' title="Share via ' + network[0].toUpperCase() + network.slice(1) + '"><a></a></li>';
         }
       } catch (err) {
         _didIteratorError4 = true;
@@ -1779,8 +1783,8 @@ var ShareUtils = (function () {
       a.setAttribute('href', this._getUrl(url, !encode, params));
       if (!encode && (!this.config.networks.facebook.loadSdk || element.getAttribute('class') !== 'facebook')) {
         var popup = {
-          width: 500,
-          height: 350
+          width: 640,
+          height: 480
         };
 
         popup.top = screen.height / 2 - popup.height / 2;
@@ -1805,8 +1809,8 @@ var ShareUtils = (function () {
       var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
       var popup = {
-        width: 500,
-        height: 350
+        width: 640,
+        height: 480
       };
 
       popup.top = screen.height / 2 - popup.height / 2;
